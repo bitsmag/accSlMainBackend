@@ -1,0 +1,133 @@
+package main
+
+import (
+	"acc/cmd"
+	"acc/db"
+	"acc/types"
+	"net/http"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	var err error
+	if err = db.SetUp("."); err != nil {
+		handleError(err)
+	}
+
+	http.HandleFunc("/help", help)
+	http.HandleFunc("/pin/", pin)
+	http.HandleFunc("/pout/", pout)
+	http.HandleFunc("/balance", balance)
+	http.HandleFunc("/log/", log)
+
+	if err := http.ListenAndServe(":5000", nil); err != nil {
+		panic(err)
+	}
+}
+
+func help(w http.ResponseWriter, r *http.Request) {
+	helptext := "help              Prints this helptext." + "\n"
+	helptext += "pin <amount>      Pays in a certain amount to the account. FLAGS: -d (dd.mm.yyy); -c <category>" + "\n"
+	helptext += "pout <amount>     Pays out a certain amount from the account. FLAGS: -d (dd.mm.yyy); -c <category>" + "\n"
+	helptext += "balance           Prints the current balance." + "\n"
+	helptext += "log               Prints past transactions. FLAGS: -o ['year' | 'category']; -d (dd.mm.yyyy); -c <category>" + "\n"
+
+	w.Write([]byte(helptext))
+}
+
+func pin(w http.ResponseWriter, r *http.Request) {
+	urlPart := strings.Split(r.URL.Path, "/")
+
+	amount, err := strconv.ParseFloat(urlPart[2], 64)
+	if err != nil {
+		w.Write([]byte("Some error occured on the server"))
+	}
+
+	var date types.Date
+	if 3 < len(urlPart) {
+		date.Set(urlPart[3])
+	}
+
+	var category types.Category
+	if 4 < len(urlPart) {
+		category.Set(urlPart[4])
+	}
+
+	resp, err := cmd.PinCmdHandler(amount, date, category)
+
+	if err != nil {
+		w.Write([]byte("Some error occured on the server"))
+	} else {
+		w.Write([]byte(resp))
+	}
+}
+
+func pout(w http.ResponseWriter, r *http.Request) {
+	urlPart := strings.Split(r.URL.Path, "/")
+
+	amount, err := strconv.ParseFloat(urlPart[2], 64)
+	amount = -amount
+	if err != nil {
+		w.Write([]byte("Some error occured on the server"))
+	}
+
+	var date types.Date
+	if 3 < len(urlPart) {
+		date.Set(urlPart[3])
+	}
+
+	var category types.Category
+	if 4 < len(urlPart) {
+		category.Set(urlPart[4])
+	}
+
+	resp, err := cmd.PoutCmdHandler(amount, date, category)
+
+	if err != nil {
+		w.Write([]byte("Some error occured on the server"))
+	} else {
+		w.Write([]byte(resp))
+	}
+}
+
+func balance(w http.ResponseWriter, r *http.Request) {
+	resp, err := cmd.BalanceCmdHandler()
+	if err != nil {
+		w.Write([]byte("Some error occured on the server"))
+	} else {
+		w.Write([]byte(resp))
+	}
+}
+
+func log(w http.ResponseWriter, r *http.Request) {
+	urlPart := strings.Split(r.URL.Path, "/")
+
+	var order types.Order
+	if 2 < len(urlPart) {
+		order.Set(urlPart[2])
+	}
+
+	var date types.Date
+	if 3 < len(urlPart) {
+		date.Set(urlPart[3])
+	}
+
+	var category types.Category
+	if 4 < len(urlPart) {
+		category.Set(urlPart[4])
+	}
+
+	resp, err := cmd.LogCmdHandler(order, date, category)
+
+	if err != nil {
+		w.Write([]byte("Some error occured on the server"))
+	} else {
+		w.Write([]byte(resp))
+	}
+}
+
+func handleError(e error) {
+	os.Exit(1)
+}
