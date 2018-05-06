@@ -1,2 +1,5 @@
 /balances
 /logs
+/.vscode
+/src/github.com
+/pkg
