@@ -17,10 +17,8 @@ func SetUp(path string) error {
 	if err != nil {
 		return err
 	}
-	if balanceFileExists := canReadBalanceFromDb(); !balanceFileExists {
-		if err := forceWriteBalance(0); err != nil { // create "0" balance storage
-			return fmt.Errorf("couldn't set balance storage: %v", err)
-		}
+	// Balance is stored in dynamoDb therefor only to log file needs to be created at startup
+	if logsFileExists := canReadLogsFromDb(); !logsFileExists {
 		var entries []types.LogEntry // create empty log storage
 		if err := forceWriteLogs(entries); err != nil {
 			return fmt.Errorf("couldn't set log storage: %v", err)
@@ -29,9 +27,14 @@ func SetUp(path string) error {
 	return nil
 }
 
-func canReadBalanceFromDb() bool {
-	if _, err := ReadBalance(); err != nil {
+func canReadLogsFromDb() bool {
+	if _, err := ReadLogs(); err != nil {
 		return false
 	}
 	return true
+}
+
+type balanceObj struct {
+	AccId   string `json:"AccId"`
+	Balance string `json:"Balance"`
 }

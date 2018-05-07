@@ -3,6 +3,12 @@ package db
 import (
 	"acc/types"
 	"fmt"
+	"strconv"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
 // ProcessTransaction bundles all db-operations necessary for a booking
@@ -24,9 +30,22 @@ func ProcessTransaction(amount float64, date types.Date, category types.Category
 
 // ForceWriteBalance overrides the balance with the passed amount
 func forceWriteBalance(balance float64) error {
-	if err := DataBase.Write("balances", "default", balance); err != nil {
+	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
+	svc := dynamodb.New(sess)
+
+	balanceObj := balanceObj{AccId: "default", Balance: strconv.FormatFloat(balance, 'f', 6, 64)}
+	item, err := dynamodbattribute.MarshalMap(balanceObj)
+
+	input := &dynamodb.PutItemInput{
+		Item:      item,
+		TableName: aws.String("acc_balances"),
+	}
+	_, err = svc.PutItem(input)
+
+	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
