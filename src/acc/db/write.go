@@ -3,7 +3,9 @@ package db
 import (
 	"acc/types"
 	"fmt"
+	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -38,14 +40,13 @@ func forceWriteBalance(balance float64) error {
 
 	input := &dynamodb.PutItemInput{
 		Item:      item,
-		TableName: aws.String("acc_balances"),
+		TableName: aws.String("Acc_balances"),
 	}
 	_, err = svc.PutItem(input)
 
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -63,26 +64,38 @@ func bookAmount(amount float64) error {
 	return nil
 }
 
-// ForceWriteLogs overrides the logs with the passed logEntry
-func forceWriteLogs(entries []types.LogEntry) error {
-	DataBase.Delete("logs", "default") // error is thrown when file doesnt exist - ignore error
-	if err := DataBase.Write("logs", "default", entries); err != nil {
+// logBooking writes a logEntry to the log
+func logBooking(entry types.LogEntry) error {
+	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
+	svc := dynamodb.New(sess)
+
+	bookingId := randomString(14)
+	logObj := logObj{BookingId: bookingId, LogEntry: entry}
+	item, err := dynamodbattribute.MarshalMap(logObj)
+
+	input := &dynamodb.PutItemInput{
+		Item:      item,
+		TableName: aws.String("Acc_logs"),
+	}
+	_, err = svc.PutItem(input)
+
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// LogBooking writes a logEntry to the log
-func logBooking(entry types.LogEntry) error {
-	var entries []types.LogEntry
-	var err error
-	if entries, err = ReadLogs(); err != nil {
-		return fmt.Errorf("couldn't read log-entries from database: %v", err)
-	}
-	entries = append(entries, entry)
-	if err := DataBase.Write("logs", "default", entries); err != nil {
-		return err
-	}
-	return nil
+// https://www.calhoun.io/creating-random-strings-in-go/
+func randomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	b := make([]byte, length)
+
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+
+	return string(b)
 }

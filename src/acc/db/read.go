@@ -15,12 +15,14 @@ import (
 func ReadBalance() (float64, error) {
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
 	svc := dynamodb.New(sess)
+
 	result, err := svc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("acc_balances"),
+		TableName: aws.String("Acc_balances"),
 		Key: map[string]*dynamodb.AttributeValue{
 			"AccId": {S: aws.String("default")},
 		},
 	})
+
 	if err != nil {
 		return 0, err
 	}
@@ -40,8 +42,30 @@ func ReadBalance() (float64, error) {
 // ReadLogs returns all logEntries
 func ReadLogs() ([]types.LogEntry, error) {
 	var entries []types.LogEntry
-	if err := DataBase.Read("logs", "default", &entries); err != nil {
+
+	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
+	svc := dynamodb.New(sess)
+
+	input := &dynamodb.ScanInput{
+		TableName: aws.String("Acc_logs"),
+	}
+	result, err := svc.Scan(input)
+
+	if err != nil {
 		return entries, err
 	}
+
+	logObjs := []logObj{}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &logObjs)
+
+	if err != nil {
+		return entries, fmt.Errorf("Failed to unmarshal and parse logs: %v", err)
+	}
+
+	for _, logObj := range logObjs {
+		entries = append(entries, logObj.LogEntry)
+	}
+
 	return entries, nil
 }
