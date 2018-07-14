@@ -1,9 +1,16 @@
 language: go
-
 go_import_path: acc
-
 go:
-- "1.10"
-
+- '1.10'
 script:
 - "./build.sh"
+deploy:
+  provider: s3
+  access_key_id: AKIAJHS35VHMVM6FC4SA
+  secret_access_key:
+    secure: ahaEUVNq1Xq6a0fkJJGDIUrvHaZRgrScOmlwZ/hnLkKsNc/B27XdzokwUkoyx16CTeJFE8d9Eps21thmSFhayoXFE3Yhk4+PMEf50En3G07OX4minwwlTWjMxImVP8C2FHeIgfYquDflIHnptUUdsQUZwPAty+DlzDu4OlTCg1FctfWGzpiKrOtBKZYqTUx79KQD4YcGvbrBxowK2f51eagGQgGmA15XFQqvVzW78ZMRARWxDRlSiVbBP7tlRYF2wjHlZSlGWiwdK22bFeubeIeUPTxGyuPNtBmFouwkEvXGLhHJ9mSRDbZgLvvNEloDW7+iYskP12WuY0WrIoDUpm221qwSOxXxihhRDVXQAzW++D4cfZCn417HLe5Ec14MRvS61mfmuqPgl8kqAfAdyRsM3fn76m46i3lan8Yk1iDnGOh/yTf6/JNgEIgH3uZXalcioW2bm91O9HQrcERHUaBqKan88vrfXlCbYiDmqiLgC3qm54W5lO9qh0strg5tv4dkL+GF2hEvhdFZrgreIdWjiEeq+Wjf96vZuAhwEkcEMI0V32LWMR/2qW3IY8wGlFHQoqprhIXpZFghyQS3DECpct6wV+oQ8QccixKeO0LB6BLlp58y1TI8M1w2TeM3BnpmO1eYlMewD+MM/nIReGgYimHo1lHyUT2BYEuDczY=
+  bucket: acc.mainbackend.build
+  acl: private
+  on:
+    repo: bitsmag/accSlMainBackend
+  skip_cleanup: true
