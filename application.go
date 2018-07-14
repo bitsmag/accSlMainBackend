@@ -4,6 +4,7 @@ import (
 	"acc/cmd"
 	"acc/db"
 	"acc/types"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,8 +13,17 @@ import (
 
 func main() {
 	var err error
-	if err = db.SetUp("."); err != nil {
-		handleError(err)
+
+	var arg string
+	if len(os.Args) > 1 {
+		arg = os.Args[1]
+	}
+
+	if arg == "rebuildTables" || arg == "rt" {
+		if err = db.SetUp(); err != nil {
+			fmt.Println(err)
+			handleError(err)
+		}
 	}
 
 	http.HandleFunc("/help", help)
@@ -42,6 +52,7 @@ func pin(w http.ResponseWriter, r *http.Request) {
 
 	amount, err := strconv.ParseFloat(urlPart[2], 64)
 	if err != nil {
+		fmt.Println(err)
 		w.Write([]byte("Some error occured on the server"))
 	}
 
@@ -58,6 +69,7 @@ func pin(w http.ResponseWriter, r *http.Request) {
 	resp, err := cmd.PinCmdHandler(amount, date, category)
 
 	if err != nil {
+		fmt.Println(err)
 		w.Write([]byte("Some error occured on the server"))
 	} else {
 		w.Write([]byte(resp))
@@ -70,6 +82,7 @@ func pout(w http.ResponseWriter, r *http.Request) {
 	amount, err := strconv.ParseFloat(urlPart[2], 64)
 	amount = -amount
 	if err != nil {
+		fmt.Println(err)
 		w.Write([]byte("Some error occured on the server"))
 	}
 
@@ -86,6 +99,7 @@ func pout(w http.ResponseWriter, r *http.Request) {
 	resp, err := cmd.PoutCmdHandler(amount, date, category)
 
 	if err != nil {
+		fmt.Println(err)
 		w.Write([]byte("Some error occured on the server"))
 	} else {
 		w.Write([]byte(resp))
@@ -95,6 +109,7 @@ func pout(w http.ResponseWriter, r *http.Request) {
 func balance(w http.ResponseWriter, r *http.Request) {
 	resp, err := cmd.BalanceCmdHandler()
 	if err != nil {
+		fmt.Println(err)
 		w.Write([]byte("Some error occured on the server"))
 	} else {
 		w.Write([]byte(resp))
@@ -122,6 +137,7 @@ func log(w http.ResponseWriter, r *http.Request) {
 	resp, err := cmd.LogCmdHandler(order, date, category)
 
 	if err != nil {
+		fmt.Println(err)
 		w.Write([]byte("Some error occured on the server"))
 	} else {
 		w.Write([]byte(resp))
