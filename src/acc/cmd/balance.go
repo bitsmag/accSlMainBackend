@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"acc/db"
-	"acc/useroutput"
 	"fmt"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/db"
+	"github.com/bitsmag/accSlMainBackend/src/acc/useroutput"
 )
 
 func BalanceCmdHandler() (string, error) {

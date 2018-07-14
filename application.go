@@ -1,14 +1,15 @@
 package main
 
 import (
-	"acc/cmd"
-	"acc/db"
-	"acc/types"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/cmd"
+	"github.com/bitsmag/accSlMainBackend/src/acc/db"
+	"github.com/bitsmag/accSlMainBackend/src/acc/types"
 )
 
 func main() {

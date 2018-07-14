@@ -1,12 +1,13 @@
 package types
 
 import (
-	"acc/stringutil"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/stringutil"
 )
 
 // Date is a wrapper for time.Time to implement the pflag.Value interface

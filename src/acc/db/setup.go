@@ -1,8 +1,9 @@
 package db
 
 import (
-	"acc/types"
 	"fmt"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/types"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"

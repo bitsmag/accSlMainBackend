@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"acc/db"
-	"acc/types"
-	"acc/useroutput"
 	"fmt"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/db"
+	"github.com/bitsmag/accSlMainBackend/src/acc/types"
+	"github.com/bitsmag/accSlMainBackend/src/acc/useroutput"
 )
 
 func LogCmdHandler(logOrder types.Order, logDate types.Date, logCategory types.Category) (string, error) {

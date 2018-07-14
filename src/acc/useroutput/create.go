@@ -1,11 +1,12 @@
 package useroutput
 
 import (
-	"acc/stringutil"
-	"acc/types"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/stringutil"
+	"github.com/bitsmag/accSlMainBackend/src/acc/types"
 )
 
 // CreateBalanceResp returns a string to inform the user about the account balance

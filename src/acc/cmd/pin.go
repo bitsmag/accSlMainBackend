@@ -1,9 +1,11 @@
 package cmd
 
 import (
-	"acc/db"
-	"acc/types"
 	"fmt"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/types"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/db"
 )
 
 func PinCmdHandler(pinAmount float64, pinDate types.Date, pinCategory types.Category) (string, error) {

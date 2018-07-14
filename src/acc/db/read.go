@@ -1,9 +1,10 @@
 package db
 
 import (
-	"acc/types"
 	"fmt"
 	"strconv"
+
+	"github.com/bitsmag/accSlMainBackend/src/acc/types"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
