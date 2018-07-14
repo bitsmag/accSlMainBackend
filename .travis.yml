@@ -1,5 +1,7 @@
 language: go
 
+go_import_path: acc
+
 go:
 - "1.10"
 
