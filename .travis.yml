@@ -4,6 +4,8 @@ go:
 - '1.10'
 script:
 - "./build.sh"
+after_success:
+- zip -r Archive.zip .
 deploy:
   provider: s3
   access_key_id: AKIAJHS35VHMVM6FC4SA
