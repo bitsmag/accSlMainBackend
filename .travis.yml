@@ -13,4 +13,5 @@ deploy:
   acl: private
   on:
     repo: bitsmag/accSlMainBackend
+  region: us-west-2
   skip_cleanup: true
