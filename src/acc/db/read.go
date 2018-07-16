@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -11,6 +12,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+)
+
+var (
+	ErrDefaultBalanceDoesNotExist = errors.New("acc.db.read: default balances item is required but does not exist in db")
 )
 
 // ReadBalance returns the current ballance of the account
