@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/bitsmag/accSlMainBackend/src/acc/types"
@@ -14,11 +15,16 @@ import (
 
 // ReadBalance returns the current ballance of the account
 func ReadBalance() (float64, error) {
+	tablenameBalances := os.Getenv("TABLENAME_BALANCES")
+	if len(tablenameBalances) == 0 {
+		tablenameBalances = "Acc_balances"
+	}
+
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
 	svc := dynamodb.New(sess)
 
 	result, err := svc.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("Acc_balances"),
+		TableName: aws.String(tablenameBalances),
 		Key: map[string]*dynamodb.AttributeValue{
 			"AccId": {S: aws.String("default")},
 		},
@@ -42,13 +48,18 @@ func ReadBalance() (float64, error) {
 
 // ReadLogs returns all logEntries
 func ReadLogs() ([]types.LogEntry, error) {
+	tablenameLog := os.Getenv("TABLENAME_LOG")
+	if len(tablenameLog) == 0 {
+		tablenameLog = "Acc_logs"
+	}
+
 	var entries []types.LogEntry
 
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
 	svc := dynamodb.New(sess)
 
 	input := &dynamodb.ScanInput{
-		TableName: aws.String("Acc_logs"),
+		TableName: aws.String(tablenameLog),
 	}
 	result, err := svc.Scan(input)
 

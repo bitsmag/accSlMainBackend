@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"time"
 
@@ -33,6 +34,11 @@ func ProcessTransaction(amount float64, date types.Date, category types.Category
 
 // ForceWriteBalance overrides the balance with the passed amount
 func forceWriteBalance(balance float64) error {
+	tablenameBalances := os.Getenv("TABLENAME_BALANCES")
+	if len(tablenameBalances) == 0 {
+		tablenameBalances = "Acc_balances"
+	}
+
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
 	svc := dynamodb.New(sess)
 
@@ -41,7 +47,7 @@ func forceWriteBalance(balance float64) error {
 
 	input := &dynamodb.PutItemInput{
 		Item:      item,
-		TableName: aws.String("Acc_balances"),
+		TableName: aws.String(tablenameBalances),
 	}
 	_, err = svc.PutItem(input)
 
@@ -67,6 +73,11 @@ func bookAmount(amount float64) error {
 
 // logBooking writes a logEntry to the log
 func logBooking(entry types.LogEntry) error {
+	tablenameLog := os.Getenv("TABLENAME_LOG")
+	if len(tablenameLog) == 0 {
+		tablenameLog = "Acc_logs"
+	}
+
 	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-west-2")})
 	svc := dynamodb.New(sess)
 
@@ -76,7 +87,7 @@ func logBooking(entry types.LogEntry) error {
 
 	input := &dynamodb.PutItemInput{
 		Item:      item,
-		TableName: aws.String("Acc_logs"),
+		TableName: aws.String(tablenameLog),
 	}
 	_, err = svc.PutItem(input)
 
