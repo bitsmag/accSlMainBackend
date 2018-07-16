@@ -42,6 +42,11 @@ func ReadBalance() (float64, error) {
 	balanceObj := balanceObj{}
 
 	err = dynamodbattribute.UnmarshalMap(result.Item, &balanceObj)
+
+	if balanceObj.Balance == "" {
+		return 0, ErrDefaultBalanceDoesNotExist
+	}
+
 	balance, err := strconv.ParseFloat(balanceObj.Balance, 64)
 
 	if err != nil {
