@@ -12,7 +12,7 @@ import (
 )
 
 // SetUp creates the required tables in dynamoDb. Caution: overrides existing tables!
-func SetUp() error {
+func SetUpTables() error {
 	fmt.Println("SETTING UP NEW DATABASE TABLES")
 
 	var err error
@@ -43,12 +43,17 @@ func SetUp() error {
 	}
 	fmt.Println("*Created new logs table")
 
+	return nil
+}
+
+// Inserts initial/required values into tables
+func InsertInitialValues() error {
+	var err error
+
 	err = forceWriteBalance(0)
 	if err != nil {
 		return fmt.Errorf("couldn't write init value '0' to balance table: %v", err.Error())
 	}
-
-	fmt.Println("DATABASE IS READY TO USE")
 	return nil
 }
 

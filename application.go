@@ -19,11 +19,22 @@ func main() {
 	if len(os.Args) > 1 {
 		arg = os.Args[1]
 	}
-
-	if arg == "rebuildTables" || arg == "rt" {
-		if err = db.SetUp(); err != nil {
+	if arg == "rebuildTables" || arg == "rt" { // rebuild database if "rt" param is present
+		if err = db.SetUpTables(); err != nil {
 			fmt.Println(err)
 			handleError(err)
+		}
+		if err = db.InsertInitialValues(); err != nil {
+			fmt.Println(err)
+			handleError(err)
+		}
+	} else { // check if required "default" balance-entry is available already
+		var err error
+		if _, err = db.ReadBalance(); err == db.ErrDefaultBalanceDoesNotExist {
+			if err = db.InsertInitialValues(); err != nil {
+				fmt.Println(err)
+				handleError(err)
+			}
 		}
 	}
 
