@@ -6,6 +6,8 @@ script:
 - "./build.sh"
 after_success:
 - zip -r Archive.zip .
+- mkdir build
+- mv Archive.zip build
 deploy:
   provider: s3
   access_key_id: AKIAJHS35VHMVM6FC4SA
@@ -15,5 +17,6 @@ deploy:
   acl: private
   on:
     repo: bitsmag/accSlMainBackend
+  local_dir: build
   region: us-west-2
   skip_cleanup: true
